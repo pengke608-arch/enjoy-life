@@ -1199,10 +1199,32 @@ function htmlDaily(){
     </div>
     <script>
       (function(){
+        // Todo list
         const t=Store.get('todos',[]);
+        const tl=document.getElementById('todoList');
+        if(tl){
+          if(!t.length){ tl.innerHTML='<div class="empty"><span class="emo">🎉</span>'+(LANG==='zh'?'还没有待办，轻松一天！':'No todos yet')+'</div>'; }
+          else{ tl.innerHTML=t.map((x,i)=>'<div class="list-item" style="margin-bottom:4px"><label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer"><input type="checkbox"'+(x.done?' checked':'')+' onchange="toggleTodo('+i+')" style="width:16px;height:16px"><span style="flex:1;font-size:13px'+(x.done?';color:var(--text-mute);text-decoration:line-through':'')+'">'+x.text+'</span></label><button class="icon-btn" onclick="delTodo('+i+')">X</button></div>').join(''); }
+        }
+        // Timeline
+        const tls=Store.get('timelines',[]);
+        const tlEl=document.getElementById('tlList');
+        if(tlEl){
+          if(!tls.length){ tlEl.innerHTML='<div class="empty"><span class="emo">📅</span>'+(LANG==='zh'?'暂无日程':'No plans')+'</div>'; }
+          else{ tlEl.innerHTML=tls.map((x,i)=>'<div class="tl-item"><div class="tl-time">'+x.time+'</div><div class="tl-body"><div class="tl-title">'+x.title+'</div>'+(x.desc?'<div class="tl-desc">'+x.desc+'</div>':'')+'</div><button class="icon-btn" onclick="delTL('+i+')">X</button></div>').join(''); }
+        }
+        // Habits
+        const hbs=Store.get('habits',[]);
+        const hbEl=document.getElementById('habitList');
+        if(hbEl){
+          if(!hbs.length){ hbEl.innerHTML='<div class="empty"><span class="emo">🌱</span>'+(LANG==='zh'?'还没添加习惯':'No habits')+'</div>'; }
+          else{ hbEl.innerHTML=hbs.map((h)=>'<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--card-hover);border-radius:var(--radius-sm);margin-bottom:4px;cursor:pointer" onclick="toggleHabit(\''+h.id+'\')"><div style="flex:1;font-size:13px">'+h.icon+' '+h.name+'</div><div style="display:flex;gap:3px">'+(function(){let s='';for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);const chk=(h.dates||[]).indexOf(ds)>=0;s+='<div style="width:14px;height:14px;border-radius:3px;background:'+(chk?'var(--accent)':'var(--border)')+'"></div>';}return s;})()+'</div></div>').join(''); }
+        }
+        // Progress ring
         const d=t.filter(x=>x.done).length;
         const p=t.length?Math.round(d/t.length*100):0;
-        document.getElementById('dailyRingNum').textContent=p+'%';
+        const nr=document.getElementById('dailyRingNum');
+        if(nr) nr.textContent=p+'%';
         setRing('dailyRing',p);
       })();
     <\/script>
@@ -1217,7 +1239,7 @@ function htmlLearning(type,title,sub){
   const pct = paths.length ? Math.round(paths.filter(p=>p.done).length/paths.length*100) : 0;
   return `
     <div class="page-head">
-      <div class="page-title"><span class="emoji">${title.split(' ')[0]}</span> ${title}</div>
+      <div class="page-title">${title}</div>
       <div class="page-sub">${sub}</div>
     </div>
     <div class="grid-cols-2-1">
