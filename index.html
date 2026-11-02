@@ -384,14 +384,52 @@ body.eye-care .bg-mask{background:rgba(245,240,225,.7)}
 .pred-card-num{font-size:32px;font-weight:800}
 .pred-text{font-size:13px;line-height:1.8;margin-top:10px}
 
-/* 响应式 */
+/* 响应式 —— 手机/平板/桌面 */
 @media(max-width:900px){
-  .sidebar{width:60px;min-width:60px}
+  .sidebar{width:72px;min-width:72px}
   .brand-name,.brand-sub,.nav-item .icon + *,.sf-label,.sf-row{display:none}
   .nav-item{justify-content:center;padding:10px}
   .nav-item .icon{font-size:22px}
   .content{padding:16px}
 }
+/* 手机端（<=600px）：抽屉式侧栏 + 汉堡菜单 */
+@media(max-width:600px){
+  .app{flex-direction:column;height:auto;min-height:100vh}
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:1000;
+    width:260px;min-width:260px;
+    transform:translateX(-100%);
+    transition:transform .3s ease;
+    box-shadow:4px 0 20px rgba(0,0,0,.2);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .sidebar.open + .sidebar-backdrop{display:block}
+  .sidebar-backdrop{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;
+  }
+  .brand-name,.brand-sub,.nav-item .icon + *,.sf-label,.sf-row{display:block}
+  .nav-item{justify-content:flex-start;padding:10px 14px}
+  .nav-item .icon{font-size:18px}
+  .content{margin-left:0;padding:14px 16px;min-height:100vh}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;gap:12px}
+  .grid-2-1{grid-template-columns:1fr}
+  .card{margin-bottom:10px;border-radius:14px}
+  .page-header{flex-wrap:wrap;gap:8px}
+  /* 汉堡按钮 */
+  .mobile-header{
+    display:flex;align-items:center;gap:10px;
+    position:sticky;top:0;z-index:50;
+    padding:10px 14px;background:rgba(255,255,255,.85);
+    backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,0,0,.06);
+  }
+  .hamburger{
+    width:36px;height:36px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.05);border:none;cursor:pointer;font-size:20px;
+  }
+  .hamburger:active{background:rgba(0,0,0,.1)}
+}
+.mobile-header{display:none}
 </style>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#43cea2">
@@ -406,7 +444,11 @@ body.eye-care .bg-mask{background:rgba(245,240,225,.7)}
 <div class="bg-mask"></div>
 
 <div class="app">
-  <aside class="sidebar">
+  <div class="mobile-header" id="mobileHeader">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="菜单">☰</button>
+    <span style="font-weight:700;font-size:15px" id="mobileTitle">成长工作台</span>
+  </div>
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="brand-logo">🌿</div>
       <div class="brand-name" data-i18n="brandName">我的工作台</div>
@@ -424,6 +466,7 @@ body.eye-care .bg-mask{background:rgba(245,240,225,.7)}
       </div>
     </div>
   </aside>
+  <div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
   <main class="content" id="content"></main>
 </div>
 
@@ -542,8 +585,11 @@ function initApp(){
       if (_changed) { Store.set('books', _filtered); }
     }
   } catch(_e) {}
-  // 启动欢迎页（每次访问都显示，必须选身份）
-  setTimeout(function(){ showWelcome(); }, 300);
+  // 启动欢迎页（只在第一次/未选性别时显示）
+  var _g = Store.get('userGender', '');
+  if(!Store.get('welcomeDone', false) || !_g){
+    setTimeout(function(){ showWelcome(); }, 300);
+  }
 }
 /* ========== 启动欢迎页 ========== */
 function showWelcome(){
@@ -941,6 +987,10 @@ function renderPage(pid){
   renderContent();
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.p===pid));
   document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.dataset.page===pid));
+  // 手机端：更新标题 + 关抽屉
+  var _mt = document.getElementById('mobileTitle');
+  if(_mt){ _mt.textContent = NAV_LABELS_ZH[pid] || pid; }
+  if(window.innerWidth <= 600){ closeSidebar(); }
   // 板块独立背景
   const bgs = Store.get('pageBgs', {});
   const pFilters = Store.get('pageBgFilters', {});
@@ -2616,6 +2666,18 @@ function trackUsage(pid){
 /* 页面关闭时保存最终时长 */
 window.addEventListener('beforeunload', function(){ trackUsage(Store.get('activePage','home')); });
 window.addEventListener('load', function(){ setInterval(function(){ trackUsage(Store.get('activePage','home')); }, 30000); });
+
+/* ======= 移动端抽屉菜单 ======= */
+function toggleSidebar(force){
+  var sb = document.getElementById('sidebar');
+  if(!sb) return;
+  if(typeof force === 'boolean'){
+    if(force) sb.classList.add('open'); else sb.classList.remove('open');
+  } else {
+    sb.classList.toggle('open');
+  }
+}
+function closeSidebar(){ toggleSidebar(false); }
 
 /* ===== PWA Service Worker 注册 ===== */
 let _installPrompt = null;
