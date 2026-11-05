@@ -384,23 +384,15 @@ body.eye-care .bg-mask{background:rgba(245,240,225,.7)}
 .pred-card-num{font-size:32px;font-weight:800}
 .pred-text{font-size:13px;line-height:1.8;margin-top:10px}
 
-/* 响应式 —— 手机/平板/桌面 */
+/* 响应式 —— 平板+手机（<=900px 统一抽屉式侧栏） */
 @media(max-width:900px){
-  .sidebar{width:72px;min-width:72px}
-  .brand-name,.brand-sub,.nav-item .icon + *,.sf-label,.sf-row{display:none}
-  .nav-item{justify-content:center;padding:10px}
-  .nav-item .icon{font-size:22px}
-  .content{padding:16px}
-}
-/* 手机端（<=600px）：抽屉式侧栏 + 汉堡菜单 */
-@media(max-width:600px){
   .app{flex-direction:column;height:auto;min-height:100vh}
   .sidebar{
     position:fixed;top:0;left:0;bottom:0;z-index:1000;
     width:260px;min-width:260px;
     transform:translateX(-100%);
     transition:transform .3s ease;
-    box-shadow:4px 0 20px rgba(0,0,0,.2);
+    box-shadow:4px 0 20px rgba(0,0,0,.15);
   }
   .sidebar.open{transform:translateX(0)}
   .sidebar.open + .sidebar-backdrop{display:block}
@@ -410,24 +402,30 @@ body.eye-care .bg-mask{background:rgba(245,240,225,.7)}
   .brand-name,.brand-sub,.nav-item .icon + *,.sf-label,.sf-row{display:block}
   .nav-item{justify-content:flex-start;padding:10px 14px}
   .nav-item .icon{font-size:18px}
-  .content{margin-left:0;padding:14px 16px;min-height:100vh}
-  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;gap:12px}
+  .content{margin-left:0;padding:12px 14px;min-height:100vh}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;gap:10px}
   .grid-2-1{grid-template-columns:1fr}
-  .card{margin-bottom:10px;border-radius:14px}
+  .card{margin-bottom:10px;border-radius:14px;padding:12px}
   .page-header{flex-wrap:wrap;gap:8px}
-  /* 汉堡按钮 */
+  .page-title{font-size:18px}
+  /* 汉堡菜单 */
   .mobile-header{
     display:flex;align-items:center;gap:10px;
     position:sticky;top:0;z-index:50;
-    padding:10px 14px;background:rgba(255,255,255,.85);
-    backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,0,0,.06);
+    padding:10px 14px;background:rgba(255,255,255,.88);
+    backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,.06);
   }
   .hamburger{
-    width:36px;height:36px;border-radius:10px;
+    width:38px;height:38px;border-radius:10px;
     display:flex;align-items:center;justify-content:center;
     background:rgba(0,0,0,.05);border:none;cursor:pointer;font-size:20px;
   }
   .hamburger:active{background:rgba(0,0,0,.1)}
+  /* 按钮尺寸 */
+  .btn{padding:8px 14px;font-size:13px}
+  .cat-pill{padding:8px 12px;font-size:12px}
+  /* 进度环 */
+  .ring-svg{width:80px;height:80px}
 }
 .mobile-header{display:none}
 </style>
@@ -518,7 +516,7 @@ const NAV_ICONS = { home:'🏠', daily:'📅', ai:'🤖', video:'🎬',
                     podcast:'🎙️', thoughts:'💭', travel:'🌍',
                     accounting:'💰', flow:'📶', timer:'⏱️',
                     loan:'💸', mbti:'🔮', review2:'🔄', usage:'📈', period:'🩸' };
-const NAV_KEYS = ['home','daily','ai','video','script','prompt','review','english','speech','book','podcast','thoughts','travel','accounting','flow','timer','loan','mbti','review2','usage','period'];
+const NAV_KEYS = ['home','daily','script','prompt','review','english','speech','book','podcast','thoughts','travel','accounting','flow','timer','loan','mbti','review2','usage','period'];
 
 /* ========== 本地存储 ========== */
 const Store = {
@@ -961,9 +959,7 @@ function getTodaySpokenTopic(){
 /* ========== 渲染所有页面容器 ========== */
 /* 板块渲染映射 */
 const PAGE_RENDERERS = {
-  home: htmlHome, daily: htmlDaily, ai: function(){return htmlLearning('ai','🤖 AI学习','Prompt工程·智能体搭建·AI运营');},
-  video: function(){return htmlLearning('video','🎬 剪辑学习（剪映SVIP）','从零到精通·短视频创作实战');},
-  script: htmlScript, prompt: htmlPrompt, review: htmlReview, english: htmlEnglish, speech: htmlSpeech,
+  home: htmlHome, daily: htmlDaily, script: htmlScript, prompt: htmlPrompt, review: htmlReview, english: htmlEnglish, speech: htmlSpeech,
   book: htmlBook, podcast: htmlPodcast, thoughts: htmlThoughts, travel: htmlTravel,
   accounting: htmlAccounting, flow: htmlFlow, timer: htmlTimer, loan: htmlLoan,
   mbti: htmlMbti, review2: htmlWorkReview, usage: htmlUsage, period: htmlPeriod
@@ -2664,7 +2660,7 @@ renderContent = function(){
     }
   });
 };
-const NAV_LABELS_ZH = { home:'首页', daily:'每日计划', ai:'AI学习', video:'剪辑学习', script:'选题脚本', prompt:'Prompt库', review:'作品复盘', english:'英语学习', speech:'表达能力', book:'读书推荐', podcast:'播客推荐', thoughts:'每日心得', travel:'看世界', accounting:'记账', flow:'流量话费', timer:'计时器', loan:'还贷款', mbti:'MBTI+星座', review2:'工作复盘', usage:'使用统计', period:'姨妈日记' };
+const NAV_LABELS_ZH = { home:'首页', daily:'每日计划', script:'选题脚本', prompt:'Prompt库', review:'作品复盘', english:'英语学习', speech:'表达能力', book:'读书推荐', podcast:'播客推荐', thoughts:'每日心得', travel:'看世界', accounting:'记账', flow:'流量话费', timer:'计时器', loan:'还贷款', mbti:'MBTI+星座', review2:'工作复盘', usage:'使用统计', period:'姨妈日记' };
 
 /* ====== 使用量追踪 ====== */
 let _usageStartTime = Date.now();
@@ -4722,7 +4718,7 @@ function saveReviewNote(){
 function delReviewNote(i){ const a=Store.get('reviewNotes',[]);a.splice(i,1);Store.set('reviewNotes',a);renderPage('review'); }
 
 /* 英语 */
-let wordIdx=0;
+let wordIdx = new Date().getDate(); // 每天自动换词
 function getAllWords(){ return [...DEFAULT_WORDS, ...Store.get('customWords',[])]; }
 function prevWord(){ wordIdx=(wordIdx-1+getAllWords().length)%Math.max(1,getAllWords().length); renderPage('english'); }
 function nextWord(){ wordIdx=(wordIdx+1)%Math.max(1,getAllWords().length); renderPage('english'); }
