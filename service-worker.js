@@ -1,5 +1,5 @@
 /* ===== 成长工作台 Service Worker ===== */
-const CACHE = 'growth-ws-v5';
+const CACHE = 'growth-ws-v6';
 const PRECACHE = [
   './',
   './index.html',
