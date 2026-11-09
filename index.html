@@ -1057,7 +1057,7 @@ function htmlHome(){
   const done = todos.filter(t=>t.done).length;
   const pct = todos.length ? Math.round(done/todos.length*100) : 0;
   const h = new Date();
-  const gender = Store.get('gender', 'keep');
+  const gender = Store.get('userGender', 'secret') === 'female' ? 'girl' : (Store.get('userGender', 'male') === 'male' ? 'boy' : 'keep');
   const greetMap = {
     keep: LANG==='zh'?'今天辛苦了，你回来了':'You worked hard, welcome back',
     girl: LANG==='zh'?'今天辛苦了，女孩 👧':'You worked hard, girl 👧',
@@ -1073,17 +1073,20 @@ function htmlHome(){
   const phraseShow = LANG==='zh' ? phraseZH : phraseEN;
   const phraseOther = LANG==='zh' ? phraseEN : phraseZH;
   const shortcuts = [
-    {id:'daily', icon:'📅', lb:LANG==='zh'?'每日计划':'Daily', sub:LANG==='zh'?'日程管理':'Plan'},{id:'ai', icon:'🤖', lb:'AI学习', sub:'Prompt/智能体'},
-    {id:'video', icon:'🎬', lb:LANG==='zh'?'剪辑学习':'Video', sub:'剪映SVIP'},{id:'script', icon:'✍️', lb:LANG==='zh'?'选题脚本':'Script', sub:LANG==='zh'?'一键生成':'Gen'},
-    {id:'prompt', icon:'💡', lb:'Prompt库', sub:LANG==='zh'?'快速调用':'Copy'},{id:'review', icon:'📊', lb:LANG==='zh'?'作品复盘':'Works', sub:LANG==='zh'?'数据追踪':'Data'},
-    {id:'english', icon:'UK', lb:LANG==='zh'?'英语学习':'English', sub:LANG==='zh'?'每日单词':'Words'},{id:'speech', icon:'🎤', lb:LANG==='zh'?'表达能力':'Speech', sub:LANG==='zh'?'面试训练':'Interview'},
-    {id:'book', icon:'📚', lb:LANG==='zh'?'读书推荐':'Reading', sub:LANG==='zh'?'内嵌阅读':'Reader'},{id:'review2', icon:'🔄', lb:LANG==='zh'?'工作复盘':'Review', sub:LANG==='zh'?'周月年总结':'Cycle'},
+    {id:'daily', icon:'📅', lb:LANG==='zh'?'每日计划':'Daily', sub:LANG==='zh'?'日程管理':'Plan'},
+    {id:'script', icon:'✍️', lb:LANG==='zh'?'选题脚本':'Script', sub:LANG==='zh'?'一键生成':'Gen'},
+    {id:'prompt', icon:'💡', lb:'Prompt库', sub:LANG==='zh'?'快速调用':'Copy'},
+    {id:'review', icon:'📊', lb:LANG==='zh'?'作品复盘':'Works', sub:LANG==='zh'?'数据追踪':'Data'},
+    {id:'english', icon:'UK', lb:LANG==='zh'?'英语学习':'English', sub:LANG==='zh'?'每日单词':'Words'},
+    {id:'speech', icon:'🎤', lb:LANG==='zh'?'表达能力':'Speech', sub:LANG==='zh'?'面试训练':'Interview'},
+    {id:'book', icon:'📚', lb:LANG==='zh'?'读书推荐':'Reading', sub:LANG==='zh'?'内嵌阅读':'Reader'},
+    {id:'review2', icon:'🔄', lb:LANG==='zh'?'工作复盘':'Review', sub:LANG==='zh'?'周月年总结':'Cycle'},
   ];
   if(!Store.get('__init', false)){
     initDemoData();
     Store.set('__init', true);
   }
-  const genderLabel = {keep:LANG==='zh'?'保密':'Private', girl:'👧 Girl', boy:'👦 Boy'};
+  const genderLabel = {keep:LANG==='zh'?'保密':'Private', girl:LANG==='zh'?'女孩':'Girl', boy:LANG==='zh'?'男孩':'Boy'};
   return `
     <div class="home-cover" style="position:relative;background:var(--grad);border-radius:20px;padding:32px;margin-bottom:18px;color:#fff;overflow:hidden">
       <div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.12)"></div>
@@ -1096,9 +1099,9 @@ function htmlHome(){
           <div style="font-size:11px;margin-top:4px;opacity:.85;font-style:italic">${phraseEN}</div>
         </div>
         <div style="margin-top:18px;display:flex;gap:6px;flex-wrap:wrap">
-          <button class="cat-pill${gender==='keep'?' active':''}" style="background:rgba(255,255,255,.2)" onclick="Store.set('gender','keep');renderPage('home');toast('${LANG==='zh'?'已设为保密':'Set to private'}')">🤫 ${LANG==='zh'?'保密':'Private'}</button>
-          <button class="cat-pill${gender==='girl'?' active':''}" style="background:rgba(255,255,255,.2)" onclick="Store.set('gender','girl');renderPage('home')">👧 ${LANG==='zh'?'女孩':'Girl'}</button>
-          <button class="cat-pill${gender==='boy'?' active':''}" style="background:rgba(255,255,255,.2)" onclick="Store.set('gender','boy');renderPage('home')">👦 ${LANG==='zh'?'男孩':'Boy'}</button>
+          <button class="cat-pill${gender==='keep'?' active':''}" style="background:rgba(255,255,255,.2)" onclick="Store.set('userGender','secret');renderPage('home');toast('${LANG==='zh'?'已设为保密':'Set to private'}')">🤫 ${LANG==='zh'?'保密':'Private'}</button>
+          <button class="cat-pill${gender==='girl'?' active':''}" style="background:rgba(255,255,255,.2)" onclick="Store.set('userGender','female');renderPage('home')">👧 ${LANG==='zh'?'女孩':'Girl'}</button>
+          <button class="cat-pill${gender==='boy'?' active':''}" style="background:rgba(255,255,255,.2)" onclick="Store.set('userGender','male');renderPage('home')">👦 ${LANG==='zh'?'男孩':'Boy'}</button>
         </div>
       </div>
     </div>
